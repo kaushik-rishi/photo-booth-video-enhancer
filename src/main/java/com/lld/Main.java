@@ -7,6 +7,8 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        final String FFMPEG_PATH = "/opt/homebrew/bin/ffmpeg";
+
         String rawVideoRecordingPath = "/Users/kmanchukonda/music/te-amo/te-amo-raw-booth.mov";
 
         FFmpeg ffmpeg = new FFmpeg("/opt/homebrew/bin/ffmpeg");

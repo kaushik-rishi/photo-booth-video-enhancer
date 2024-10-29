@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PhotoBoothVideoEnhancer {
-    private final String FFMPEG_PATH = "/opt/homebrew/bin/ffmpeg";
     private final FFmpeg ffmpeg;
     private final FFprobe ffprobe;
     private String sandboxDirPath;
@@ -53,6 +52,7 @@ public class PhotoBoothVideoEnhancer {
 
     private String increaseAudioLevelsBy10x(String rawAudio) {
         FFmpegBuilder command = new FFmpegBuilder();
+        // ffmpeg -i te-amo-audio-raw.mp3 -filter:a "volume=10" te-amo-audio-2x.mp3
         command.addInput(rawAudio)
                 .addOutput(sandboxDirPath + "/raw-audio-10x.mp3")
                 .setAudioFilter("volume=10");
@@ -64,6 +64,8 @@ public class PhotoBoothVideoEnhancer {
 
     private String combineVideoAndAudio(String rawVideo, String enhancedAudio) {
         FFmpegBuilder command = new FFmpegBuilder();
+
+        // ffmpeg -i raw-video.mp4 -i raw-audio-10x.mp3 -c:v copy -c:a aac final.mp4
         command.addInput(rawVideo)
                 .addInput(enhancedAudio)
                 .addOutput(sandboxDirPath + "/final.mp4")
