@@ -1,0 +1,63 @@
+<configuration debug="true">
+    <appender name="JSON" class="ch.qos.logback.core.FileAppender">
+        <file>logs/application.json</file>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMDC>true</includeMDC>
+            <includeContext>false</includeContext>
+            <customFields>{"app":"photo-booth-enhancer"}</customFields>
+        </encoder>
+    </appender>
+
+    <property name="LOG_DIR" value="logs" />
+    <property name="LOG_FILE_NAME" value="rotating_logs_booth" />
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_DIR}/tests.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${LOG_FILE_NAME}.json</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Daily rollover -->
+            <fileNamePattern>${LOG_DIR}/${LOG_FILE_NAME}-%d{yyyy-MM-dd}.json</fileNamePattern>
+            <!-- Keep 30 days' worth of history -->
+            <maxHistory>30</maxHistory>
+            <!-- Limit total size of all archive files to 10GB -->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMDC>true</includeMDC>
+            <includeContext>false</includeContext>
+            <customFields>{"app":"photo-booth-enhancer","environment":"${ENVIRONMENT:-development}"}</customFields>
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSZZ</timestampPattern>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <thread>thread</thread>
+                <message>message</message>
+                <logger>logger</logger>
+                <level>level</level>
+            </fieldNames>
+        </encoder>
+    </appender>
+
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+        <appender-ref ref="JSON_FILE" />
+    </root>
+
+    <!-- Set specific package to DEBUG for more verbose logging -->
+    <logger name="com.lld" level="DEBUG" />
+    <logger name="net.bramp.ffmpeg" level="error" />
+</configuration>
